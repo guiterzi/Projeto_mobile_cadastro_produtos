@@ -1,0 +1,12 @@
+backend/db.py
+backend/teste_db.py
+requirements.txt
+env/
+venv/
+*.env
+*.venv
+backend/.env
+backend/venv
+
+frontend/.expo
+frontend/node_modules
