@@ -59,3 +59,10 @@ def atualizar_produto(produto_id):
         "preco": produto_atualizado.preco
     }), 200
 
+@app.route('/produtos/<int:produto_id>', methods=['DELETE'])
+def deletar_produto(produto_id):
+    produto = produto_service.obter_produto(produto_id)
+    if not produto:
+        return jsonify({"error": "Produto não encontrado"}), 404
+    produto_service.deletar_produto(produto)
+    return jsonify({"message": "Produto deletado com sucesso"}), 200

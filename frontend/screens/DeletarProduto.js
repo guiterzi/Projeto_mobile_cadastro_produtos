@@ -1,8 +1,9 @@
+// screens/DeletarProduto.js
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, Text, Alert, ScrollView, StyleSheet, FlatList } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, Alert, StyleSheet, FlatList } from 'react-native';
 import axios from 'axios';
 
-export default function EditarProduto({ voltarHome }) {
+export default function DeletarProduto({ voltarHome }) {
   const [termo, setTermo] = useState('');
   const [produtos, setProdutos] = useState([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
@@ -35,25 +36,16 @@ export default function EditarProduto({ voltarHome }) {
     }
   };
 
-  const handleSalvarProduto = async () => {
-    if (!produtoSelecionado.nome || !produtoSelecionado.quantidade || !produtoSelecionado.preco) {
-      Alert.alert('Erro', 'Preencha todos os campos');
-      return;
-    }
-
+  const handleDeletarProduto = async (id) => {
     try {
-      const response = await axios.put(`http://192.168.0.205:5000/produtos/${produtoSelecionado.id}`, {
-        nome: produtoSelecionado.nome,
-        quantidade: parseInt(produtoSelecionado.quantidade),
-        preco: parseFloat(produtoSelecionado.preco),
-      });
-      Alert.alert('Sucesso', `Produto ${response.data.nome} atualizado!`);
+      await axios.delete(`http://192.168.0.205:5000/produtos/${id}`);
+      Alert.alert('Sucesso', 'Produto deletado!');
       setProdutoSelecionado(null);
       setTermo('');
       buscarTodosProdutos(); // atualizar lista
     } catch (error) {
       console.log(error);
-      Alert.alert('Erro', 'Não foi possível atualizar o produto');
+      Alert.alert('Erro', 'Não foi possível deletar o produto');
     }
   };
 
@@ -69,7 +61,6 @@ export default function EditarProduto({ voltarHome }) {
   );
 
   return (
-    // <ScrollView contentContainerStyle={styles.container}>
     <View style={styles.container}>
       <TextInput
         placeholder="Digite o nome do produto para pesquisar"
@@ -92,29 +83,14 @@ export default function EditarProduto({ voltarHome }) {
 
       {produtoSelecionado && (
         <>
-          <TextInput
-            placeholder="Nome"
-            value={produtoSelecionado.nome}
-            onChangeText={(text) => setProdutoSelecionado({ ...produtoSelecionado, nome: text })}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Quantidade"
-            value={produtoSelecionado.quantidade.toString()}
-            onChangeText={(text) => setProdutoSelecionado({ ...produtoSelecionado, quantidade: text })}
-            keyboardType="numeric"
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Preço"
-            value={produtoSelecionado.preco.toString()}
-            onChangeText={(text) => setProdutoSelecionado({ ...produtoSelecionado, preco: text })}
-            keyboardType="numeric"
-            style={styles.input}
-          />
+          <View style={styles.produtoSelecionado}>
+            <Text style={styles.nome}>{produtoSelecionado.nome}</Text>
+            <Text>Quantidade: {produtoSelecionado.quantidade}</Text>
+            <Text>Preço: R$ {produtoSelecionado.preco.toFixed(2)}</Text>
+          </View>
 
-          <TouchableOpacity style={styles.btn} onPress={handleSalvarProduto}>
-            <Text style={styles.btnText}>Salvar Alterações</Text>
+          <TouchableOpacity style={[styles.btn, { backgroundColor: '#dc3545' }]} onPress={() => handleDeletarProduto(produtoSelecionado.id)}>
+            <Text style={styles.btnText}>Deletar Produto</Text>
           </TouchableOpacity>
         </>
       )}
@@ -122,7 +98,6 @@ export default function EditarProduto({ voltarHome }) {
       <TouchableOpacity style={[styles.btn, { backgroundColor: '#6c757d', marginTop: 10 }]} onPress={voltarHome}>
         <Text style={styles.btnText}>Voltar</Text>
       </TouchableOpacity>
-    {/* </ScrollView> */}
     </View>
   );
 }
@@ -159,5 +134,13 @@ const styles = StyleSheet.create({
   },
   nome: {
     fontWeight: 'bold',
+  },
+  produtoSelecionado: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 15,
+    borderRadius: 5,
+    marginVertical: 10,
+    width: '100%',
   },
 });
