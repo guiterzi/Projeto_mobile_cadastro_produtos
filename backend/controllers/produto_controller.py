@@ -32,3 +32,30 @@ def criar_produto():
         "quantidade": produto.quantidade,
         "preco": produto.preco
     }), 201
+
+@app.route('/produtos/<int:produto_id>', methods=['PUT'])
+def atualizar_produto(produto_id):
+    data = request.json
+
+    produto = produto_service.obter_produto(produto_id)
+    if not produto:
+        return jsonify({"error": "Produto não encontrado"}), 404
+
+    nome = data.get('nome')
+    quantidade = data.get('quantidade')
+    preco = data.get('preco')
+
+    produto_atualizado = produto_service.atualizar_produto(
+        produto,
+        nome=nome,
+        quantidade=quantidade,
+        preco=preco
+    )
+
+    return jsonify({
+        "id": produto_atualizado.id,
+        "nome": produto_atualizado.nome,
+        "quantidade": produto_atualizado.quantidade,
+        "preco": produto_atualizado.preco
+    }), 200
+

@@ -27,3 +27,4 @@ class ProdutoService:
 
     def deletar_produto(self, produto):
         self.repo.delete(produto)
+
